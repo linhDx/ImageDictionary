@@ -5,7 +5,10 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.linhdx.imagedictionary.R;
@@ -15,6 +18,9 @@ import com.linhdx.imagedictionary.entity.Dictionary;
 
 import java.util.ArrayList;
 import java.util.Locale;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 
 /**
@@ -26,13 +32,20 @@ public class DictActivity extends Activity implements IDictionaryHandler {
     FrameLayout dict_container;
     private Dictionary dict;
 
+    @Bind(R.id.imgBack)
+    ImageView bar_imgBack;
+    @Bind(R.id.tvHeader)
+    TextView bar_tvHeader;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dict);
+        initTab();
         dict_container = (FrameLayout)findViewById(R.id.dict_container);
         dict= Dictionary.getInstance().init(this).setDefaultUI(dict_container, getLayoutInflater());
     }
+
 
     @Override
     public void onClickSpeechToText() {
@@ -63,5 +76,18 @@ public class DictActivity extends Activity implements IDictionaryHandler {
                 dict.setSearchView(result.get(0));
             }
         }
+    }
+
+    private void initTab(){
+        ButterKnife.bind(this);
+        bar_imgBack.setVisibility(View.VISIBLE);
+        bar_tvHeader.setText(getResources().getString(R.string.tra_tu_dien));
+
+        bar_imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(DictActivity.this, MainActivity.class));
+            }
+        });
     }
 }

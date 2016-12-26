@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:background="#e5e5e5"
+    android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#e5e5e5"
+            >
+
+            <include layout="@layout/layout_header"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:orientation="vertical">
+                <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Word:"
+                android:textSize="15sp"
+                android:layout_marginBottom="5dp"/>
+                <EditText
+                    android:id="@+id/nw_word"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_rectange_white"
+                    android:layout_marginBottom="10dp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Phonetic:"
+                    android:textSize="15sp"
+                    android:layout_marginBottom="5dp"/>
+                <EditText
+                    android:id="@+id/nw_phonetic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_rectange_white"
+                    android:layout_marginBottom="10dp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Summary:"
+                    android:textSize="15sp"
+                    android:layout_marginBottom="5dp"/>
+                <EditText
+                    android:id="@+id/nw_summary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_rectange_white"
+                    android:layout_marginBottom="10dp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Mean:"
+                    android:textSize="15sp"
+                    android:layout_marginBottom="5dp"/>
+                <EditText
+                    android:id="@+id/nw_mean"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_rectange_white"
+                    android:layout_marginBottom="10dp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Note:"
+                    android:textSize="15sp"
+                    android:layout_marginBottom="5dp"/>
+                <EditText
+                    android:id="@+id/nw_note"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_rectange_white"
+                    android:layout_marginBottom="10dp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Image:"
+                    android:textSize="15sp"
+                    android:layout_marginBottom="5dp"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/lnBgButton"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:background="#135FAB"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:id="@+id/nw_camera"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="take a picture"
+                        android:textColor="@color/white"
+                        android:textSize="13sp" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="#ccaa47" />
+
+                <RelativeLayout
+                    android:id="@+id/nw_select_img"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="select from library"
+                        android:textColor="@color/white"
+                        android:textSize="13sp"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:id="@+id/textView5" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_marginTop="15dp">
+                <ImageView
+                    android:id="@+id/img_my_picture"
+                    android:layout_width="wrap_content"
+                    android:layout_height="250dp"
+                    android:layout_gravity="center_horizontal"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+</ScrollView>

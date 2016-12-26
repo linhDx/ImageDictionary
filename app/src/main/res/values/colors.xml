@@ -3,4 +3,33 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="primary_brown">#ba8c21</color>
+    <color name="primary_dark_brown">#8d6811</color>
+    <color name="primary_blue">#1864af</color>
+    <color name="primary_dark_blue">#0f487f</color>
+
+    <color name="yellow">#ffd559</color>
+    <color name="black">#000000</color>
+    <color name="white">#ffffff</color>
+    <color name="red">#e60012</color>
+    <color name="gray">#c9caca</color>
+    <color name="brown">#bb8d09</color>
+    <color name="tabbar">#eaeaea</color>
+    <color name="footer_category">#00ada9</color>
+    <color name="transparent">#00000000</color>
+
+    <color name="bg_app">#eeeeee</color>
+    <color name="line">#cccccc</color>
+    <color name="header">#f2c216</color>
+    <color name="text_header">#280e0f</color>
+    <color name="select">#280e0f</color>
+    <color name="menu">#555555</color>
+    <color name="text">#414141</color>
+    <color name="bg_header">#1460ac</color>
+    <color name="blue">#87CEFA</color>
+    <color name="bg_table">#E8E8E8</color>
+    <color name="bg_button_next">#1864af</color>
+    <color name="bg_group_header">#2268b1</color>
+    <color name="text_note">#bc8d09</color>
 </resources>

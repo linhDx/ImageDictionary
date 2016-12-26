@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">ImageDictionary</string>
+    <string name="app_name">Image Dictionary</string>
+    <string name="tra_tu_dien">Dictionary</string>
+    <string name="my_dict">My Dictionary</string>
+    <string name="history">History</string>
+    <string name="edit">Edit</string>
+    <string name="save">Save</string>
 </resources>

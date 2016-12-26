@@ -2,13 +2,16 @@ package com.linhdx.imagedictionary.entity;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.speech.tts.TextToSpeech;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,17 +19,30 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.linhdx.imagedictionary.R;
+import com.linhdx.imagedictionary.View.Activity.DictActivity;
+import com.linhdx.imagedictionary.View.Activity.MainActivity;
+import com.linhdx.imagedictionary.View.Activity.MyDictActivity;
 import com.linhdx.imagedictionary.View.Interface.IDictionaryHandler;
+import com.linhdx.imagedictionary.network.SearchImageAPI;
 import com.linhdx.imagedictionary.sqlite.SQLiteFactory;
 import com.linhdx.imagedictionary.sqlite.SQLiteHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by shine on 31/10/2016.
@@ -39,13 +55,15 @@ public class Dictionary implements AdapterView.OnItemClickListener {
     private static Dictionary ourInstance = new Dictionary();
     private Context context;
     private Activity activity;
-    private TextToSpeech textToSpeech;
-    private Dialog dialog;
+    String  url="";
 
     SQLiteHelper dictSQL;
     ArrayAdapter<String> adapter, his_adapter;
     List<String> list, listHistory;
     private IDictionaryHandler dictionaryHandler;
+    SearchImageAPI searchImageAPI;
+    private Word wordSearch;
+    ProgressDialog dialog;
 
     public static Dictionary getInstance() {
         return ourInstance;
@@ -66,6 +84,9 @@ public class Dictionary implements AdapterView.OnItemClickListener {
         } else {
             Toast.makeText(context, "Khong the ket noi den CSDL", Toast.LENGTH_SHORT).show();
         }
+
+        //init search image
+        searchImageAPI = SearchImageAPI.retrofit.create(SearchImageAPI.class);
         return this;
     }
 
@@ -73,18 +94,6 @@ public class Dictionary implements AdapterView.OnItemClickListener {
         String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS history(id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "word TEXT NOT NULL UNIQUE, phonetic TEXT, summary TEXT, mean TEXT, count INTEGER DEFAULT 0)";
         dictSQL.getSQLiteDatabase().execSQL(CREATE_TABLE);
-    }
-
-    public Dictionary initTextToSpeech(Activity activity) {
-        textToSpeech = new TextToSpeech(activity, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if (status != TextToSpeech.ERROR) {
-                    textToSpeech.setLanguage(Locale.US);
-                }
-            }
-        });
-        return this;
     }
 
     public Dictionary setDefaultUI(ViewGroup container, LayoutInflater inflater) {
@@ -173,8 +182,13 @@ public class Dictionary implements AdapterView.OnItemClickListener {
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         SQLiteHelper sqLiteHelper = (SQLiteHelper) SQLiteFactory.getSQLiteHelper(activity, "dict.db");
         Cursor c = sqLiteHelper.getOneRow("data", "word", his_adapter.getItem(position).trim().toLowerCase());
+
         if (c.moveToNext()) {
-            showDialog(c, activity);
+            wordSearch = new Word(c.getString(c.getColumnIndex("word"))
+                    , " /" + c.getString(c.getColumnIndex("phonetic")) + "/"
+                    , c.getString(c.getColumnIndex("summary"))
+                    , c.getString(c.getColumnIndex("mean")));
+            getImage(his_adapter.getItem(position).trim().toLowerCase());
         }
     }
 
@@ -192,48 +206,84 @@ public class Dictionary implements AdapterView.OnItemClickListener {
         try {
             SQLiteHelper sqLiteHelper = (SQLiteHelper) SQLiteFactory.getSQLiteHelper(activity, "dict.db");
             Cursor c = sqLiteHelper.getOneRow("data", "word", txt.trim().toLowerCase());
+
             if (c.moveToNext()) {
-                showDialog(c, activity);
+                wordSearch = new Word(c.getString(c.getColumnIndex("word"))
+                        , " /" + c.getString(c.getColumnIndex("phonetic")) + "/"
+                        , c.getString(c.getColumnIndex("summary"))
+                        , c.getString(c.getColumnIndex("mean")));
+                getImage(wordSearch.getKeyword());
                 ContentValues cv = new ContentValues();
-                cv.put("word", txt);
-                cv.put("phonetic", c.getString(1));
-                cv.put("summary", c.getString(2));
-                cv.put("mean", c.getString(3));
+                cv.put("word", wordSearch.getKeyword());
+                cv.put("phonetic", wordSearch.getPhonetic());
+                cv.put("summary", wordSearch.getSummary());
+                cv.put("mean", wordSearch.getMean());
                 sqLiteHelper.insert("history", cv);
             } else {
-                showDialog(txt, activity);
+                wordSearch = new Word(c.getString(c.getColumnIndex("word"))
+                        , " /" + c.getString(c.getColumnIndex("phonetic")) + "/"
+                        , c.getString(c.getColumnIndex("summary"))
+                        , c.getString(c.getColumnIndex("mean")));
+                getImage(wordSearch.getKeyword());
             }
         } catch (SQLException e) {
 
         }
     }
 
-    private void showDialog(Cursor c, Activity activity) {
+    private void showDialog(Word word, Activity activity, String url) {
         DialogDict.getInstance().showDialog(activity
-                , c.getString(c.getColumnIndex("word"))
-                , " /" + c.getString(c.getColumnIndex("phonetic")) + "/"
-                , c.getString(c.getColumnIndex("summary"))
-                , c.getString(c.getColumnIndex("mean")));
-    }
+                , word.getKeyword()
+                , word.getPhonetic()
+                , word.getSummary()
+                , word.getMean()
+                , url);
 
-    private void showDialog(String title, Activity activity) {
-        DialogDict.getInstance().showDialog(activity
-                , title
-                , " /" + title + "/"
-                , "Từ khóa không tồn tại"
-                , "");
     }
+//
+//    private void showDialog(String title, Activity activity, String url) {
+//        DialogDict.getInstance().showDialog(activity
+//                , title
+//                , " /" + title + "/"
+//                , "Từ khóa không tồn tại"
+//                , ""
+//                ,"");
+//    }
 
-    public void speech(String toSpeak) {
-        if (textToSpeech == null) {
-            initTextToSpeech(activity);
-        }
-        textToSpeech.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null);
-    }
 
     public void setSearchView(String txt) {
         autoSearch.setText(txt);
         autoSearch.clearFocus();
         showDialogAndAddToHistory(activity, txt);
+    }
+
+    public String getImage(String keyWord){
+        dialog = new ProgressDialog(context);
+        dialog.show();
+        Call<ImageWrapper> call = searchImageAPI.getImageResult(keyWord, 1, 0, "en-us","Moderate");
+        call.enqueue(new Callback<ImageWrapper>() {
+            @Override
+            public void onResponse(Call<ImageWrapper> call, Response<ImageWrapper> response) {
+                for(ImageResult item: response.body().getImageResults()) {
+                    url= item.getThumbnailUrl();
+                    dialog.dismiss();
+                    showDialog(wordSearch, activity, url);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ImageWrapper> call, Throwable t) {
+                Log.d("Result", "failed");
+            }
+        });
+        return  url;
+    }
+
+    public void changeActivity(MyWord myWord){
+        Intent intent = new Intent(activity, MyDictActivity.class);
+        Gson gson = new Gson();
+        String j = gson.toJson(myWord);
+        intent.putExtra("Object", j);
+        activity.startActivity(intent);
     }
 }

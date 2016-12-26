@@ -42,9 +42,15 @@ public class SQLiteHelper extends BaseSQLiteHelper {
         return sqLiteDatabase.query(tableName, null, null, null, null, null, "RANDOM()", String.valueOf(amount));
     }
 
+
     @Override
     public void insert(String tableName, ContentValues values) {
         sqLiteDatabase.insert(tableName, null, values);
+    }
+
+    @Override
+    public void delete(String tableName, String word, int id) {
+        sqLiteDatabase.delete(tableName,"id=" + id + " and " + "word=" +word, null);
     }
 
     public List getLikeWord(String tableName, String where, String word, int limit) {
